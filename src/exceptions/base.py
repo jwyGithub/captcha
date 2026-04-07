@@ -7,9 +7,9 @@
 from typing import Optional, Any
 
 
-class SliderRecognizeError(Exception):
+class CaptchaError(Exception):
     """
-    滑块识别服务基础异常
+    验证码识别服务基础异常
     
     所有自定义异常的基类，提供统一的异常结构。
     
@@ -21,7 +21,7 @@ class SliderRecognizeError(Exception):
     
     def __init__(
         self,
-        message: str = "滑块识别服务发生错误",
+        message: str = "验证码识别服务发生错误",
         code: int = 500,
         details: Optional[Any] = None,
     ) -> None:
@@ -61,11 +61,15 @@ class SliderRecognizeError(Exception):
         return result
 
 
+# 向后兼容旧名称
+SliderRecognizeError = CaptchaError
+
+
 # ============================================================
 # 图片相关异常
 # ============================================================
 
-class ImageError(SliderRecognizeError):
+class ImageError(CaptchaError):
     """
     图片处理基础异常
     
@@ -138,7 +142,7 @@ class ImageProcessError(ImageError):
 # 识别相关异常
 # ============================================================
 
-class RecognitionError(SliderRecognizeError):
+class RecognitionError(CaptchaError):
     """
     识别基础异常
     
@@ -188,7 +192,7 @@ class OpenCVRecognitionError(RecognitionError):
 # 其他异常
 # ============================================================
 
-class ValidationError(SliderRecognizeError):
+class ValidationError(CaptchaError):
     """
     参数验证异常
     
@@ -207,7 +211,7 @@ class ValidationError(SliderRecognizeError):
         super().__init__(message, 400, details)
 
 
-class ConfigurationError(SliderRecognizeError):
+class ConfigurationError(CaptchaError):
     """
     配置异常
     

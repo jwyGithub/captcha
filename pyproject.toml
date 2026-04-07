@@ -1,7 +1,7 @@
 [project]
-name = "slider-recognize"
+name = "captcha"
 version = "0.1.0"
-description = "滑块验证码距离计算HTTP服务"
+description = "验证码识别HTTP服务"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

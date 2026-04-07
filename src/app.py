@@ -47,12 +47,22 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     
     # 预热 OCR 引擎（可选，首次调用时会自动初始化）
     try:
-        logger.info("预热 OCR 引擎...")
+        logger.info("预热滑块模板匹配 OCR 引擎...")
         from src.core.ocr import _get_ocr_instance
         _get_ocr_instance()
-        logger.info("OCR 引擎预热完成")
+        logger.info("滑块 OCR 引擎预热完成")
     except Exception as e:
-        logger.warning(f"OCR 引擎预热失败（将在首次使用时初始化）: {e}")
+        logger.warning(f"滑块 OCR 引擎预热失败（将在首次使用时初始化）: {e}")
+
+    try:
+        logger.info("预热验证码 classification OCR 引擎...")
+        from src.core.ocr import get_classification_ocr_instance
+        get_classification_ocr_instance()
+        logger.info("验证码 classification OCR 引擎预热完成")
+    except Exception as e:
+        logger.warning(
+            f"验证码 classification OCR 预热失败（将在首次使用时初始化）: {e}"
+        )
     
     logger.info("-" * 60)
     logger.info(f"服务地址: http://{settings.server.host}:{settings.server.port}")
@@ -155,16 +165,14 @@ def create_app() -> FastAPI:
 def _register_routes(app: FastAPI) -> None:
     """
     注册路由
-    
-    Args:
-        app: FastAPI 应用实例
+
+    主路径默认为 /api/v1（环境变量 API_PREFIX 可覆盖），子路径按功能模块划分。
     """
-    # 注册 API 路由（带 /api 前缀）
     app.include_router(
         api_router,
-        prefix="/api",
+        prefix=settings.api.prefix,
     )
-    
+
     logger.debug("路由注册完成")
 
 

@@ -5,36 +5,14 @@
 """
 
 import re
-from typing import Optional
 
-import ddddocr
-
+from src.core.ocr import get_classification_ocr_instance
 from src.exceptions import OCRRecognitionError
 from src.logger import get_logger
 from src.utils import get_image_content
 
 
 logger = get_logger(__name__)
-
-# 全局 OCR 实例（延迟初始化）
-_arithmetic_ocr_instance: Optional[ddddocr.DdddOcr] = None
-
-
-def _get_arithmetic_ocr_instance() -> ddddocr.DdddOcr:
-    """
-    获取算术识别 OCR 实例（单例模式）
-    
-    Returns:
-        ddddocr.DdddOcr 实例（启用 OCR 功能）
-    """
-    global _arithmetic_ocr_instance
-    
-    if _arithmetic_ocr_instance is None:
-        logger.info("初始化算术识别 OCR 引擎...")
-        _arithmetic_ocr_instance = ddddocr.DdddOcr(show_ad=False)
-        logger.info("算术识别 OCR 引擎初始化完成")
-    
-    return _arithmetic_ocr_instance
 
 
 class ArithmeticService:
@@ -51,7 +29,7 @@ class ArithmeticService:
     
     def __init__(self) -> None:
         """初始化服务"""
-        self._ocr = _get_arithmetic_ocr_instance()
+        self._ocr = get_classification_ocr_instance()
     
     def recognize_and_calculate(self, image_input: str) -> int:
         """

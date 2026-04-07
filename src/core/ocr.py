@@ -16,7 +16,26 @@ from src.utils import get_image_content, resize_image
 logger = get_logger(__name__)
 
 # 全局 OCR 实例（延迟初始化，避免重复创建）
+# 滑块模板匹配专用实例（不启用 OCR）
 _ocr_instance: Optional[ddddocr.DdddOcr] = None
+# 字符/算术验证码识别（classification）专用实例
+_classification_ocr_instance: Optional[ddddocr.DdddOcr] = None
+
+
+def get_classification_ocr_instance() -> ddddocr.DdddOcr:
+    """
+    获取用于 classification 的 OCR 单例（算术验证码、文字验证码等）。
+
+    与滑块 slide_match 使用的实例分离，避免重复加载不同模型。
+    """
+    global _classification_ocr_instance
+
+    if _classification_ocr_instance is None:
+        logger.info("初始化验证码 OCR 分类引擎（classification）...")
+        _classification_ocr_instance = ddddocr.DdddOcr(show_ad=False)
+        logger.info("验证码 OCR 分类引擎初始化完成")
+
+    return _classification_ocr_instance
 
 
 def _get_ocr_instance() -> ddddocr.DdddOcr:

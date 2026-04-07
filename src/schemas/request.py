@@ -63,6 +63,40 @@ class ArithmeticRequest(BaseModel):
         }
 
 
+class TextCaptchaRequest(BaseModel):
+    """
+    文字验证码识别请求模型
+
+    定义文字/字符类验证码识别接口的请求参数（与算术验证码输入格式一致，语义不同）。
+
+    Attributes:
+        img: 验证码图片（支持 URL 或 Base64 格式）
+    """
+
+    img: str = Field(
+        ...,
+        description="验证码图片，支持 URL 或 Base64 格式",
+        examples=["https://example.com/captcha.jpg", "data:image/png;base64,iVBORw0KGgo..."],
+    )
+
+    @field_validator("img")
+    @classmethod
+    def validate_image_input(cls, value: str) -> str:
+        """验证图片输入不为空"""
+        if not value or not value.strip():
+            raise ValueError("图片输入不能为空")
+        return value.strip()
+
+    class Config:
+        """Pydantic 模型配置"""
+
+        json_schema_extra = {
+            "example": {
+                "img": "https://example.com/captcha.jpg"
+            }
+        }
+
+
 class SliderRequest(BaseModel):
     """
     滑块识别请求模型

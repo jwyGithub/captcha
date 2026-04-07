@@ -87,8 +87,8 @@ jobs:
             # Git short SHA
             type=sha,prefix=sha-
           labels: |
-            org.opencontainers.image.title=Slider Recognize
-            org.opencontainers.image.description=滑块验证码距离计算 HTTP 服务
+            org.opencontainers.image.title=Captcha
+            org.opencontainers.image.description=验证码识别 HTTP 服务
             org.opencontainers.image.vendor=${{ github.repository_owner }}
 
       # 构建并推送 Docker 镜像

@@ -5,9 +5,10 @@ API 路由模块
 """
 
 from src.api.router import api_router
-from src.api.deps import get_slider_service
+from src.api.deps import get_slider_service, get_text_service
 
 __all__ = [
     "api_router",
     "get_slider_service",
+    "get_text_service",
 ]

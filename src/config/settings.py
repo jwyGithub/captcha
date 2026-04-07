@@ -80,12 +80,26 @@ class LogConfig:
 
 
 @dataclass
+class ApiConfig:
+    """HTTP API 路径配置（模块化版本前缀）"""
+
+    # 对外统一前缀，例如 /api/v1
+    prefix: str = "/api/v1"
+
+    def __post_init__(self) -> None:
+        raw = os.getenv("API_PREFIX", self.prefix).strip()
+        if not raw.startswith("/"):
+            raw = "/" + raw
+        self.prefix = raw.rstrip("/") or "/api/v1"
+
+
+@dataclass
 class AppConfig:
     """应用配置"""
     
-    name: str = "滑块验证码距离计算服务"
+    name: str = "验证码识别服务"
     version: str = "1.2.0"
-    description: str = "基于 OCR 和 OpenCV 的滑块验证码距离计算 HTTP 服务"
+    description: str = "基于 FastAPI 的验证码识别 HTTP 服务（滑块、算术、文字等）"
     
     def __post_init__(self) -> None:
         """从环境变量加载配置"""
@@ -109,6 +123,7 @@ class Settings:
     """
     
     app: AppConfig = field(default_factory=AppConfig)
+    api: ApiConfig = field(default_factory=ApiConfig)
     server: ServerConfig = field(default_factory=ServerConfig)
     image: ImageConfig = field(default_factory=ImageConfig)
     log: LogConfig = field(default_factory=LogConfig)

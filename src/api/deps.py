@@ -6,7 +6,7 @@
 
 from typing import Generator
 
-from src.services import SliderService, ArithmeticService
+from src.services import SliderService, ArithmeticService, TextService
 
 
 def get_slider_service() -> Generator[SliderService, None, None]:
@@ -32,6 +32,20 @@ def get_slider_service() -> Generator[SliderService, None, None]:
         yield service
     finally:
         # 清理资源（如果需要）
+        pass
+
+
+def get_text_service() -> Generator[TextService, None, None]:
+    """
+    获取文字验证码识别服务实例
+
+    Yields:
+        TextService 实例
+    """
+    service = TextService()
+    try:
+        yield service
+    finally:
         pass
 
 

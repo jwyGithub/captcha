@@ -12,7 +12,7 @@ from typing import Callable, Optional
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from src.exceptions.base import SliderRecognizeError
+from src.exceptions.base import CaptchaError
 from src.logger import get_logger
 from src.schemas.response import create_error_response
 
@@ -37,10 +37,10 @@ def register_exception_handlers(app: FastAPI) -> None:
         >>> register_exception_handlers(app)
     """
     
-    @app.exception_handler(SliderRecognizeError)
-    async def slider_recognize_error_handler(
+    @app.exception_handler(CaptchaError)
+    async def captcha_error_handler(
         request: Request,
-        exc: SliderRecognizeError,
+        exc: CaptchaError,
     ) -> JSONResponse:
         """
         处理自定义业务异常

@@ -5,6 +5,7 @@
 """
 
 from src.exceptions.base import (
+    CaptchaError,
     SliderRecognizeError,
     ImageError,
     ImageDownloadError,
@@ -23,6 +24,7 @@ from src.exceptions.handlers import (
 
 __all__ = [
     # 基础异常
+    "CaptchaError",
     "SliderRecognizeError",
     # 图片相关异常
     "ImageError",

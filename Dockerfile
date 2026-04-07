@@ -1,4 +1,4 @@
-# 滑块验证码距离计算服务 Docker 镜像
+# 验证码识别服务 Docker 镜像
 # 优化体积版本 - 基于 Python 3.12 slim
 # 注意: ddddocr 不支持 Python 3.13
 

@@ -4,7 +4,12 @@
 定义 API 请求和响应的数据模型（Schema）。
 """
 
-from src.schemas.request import SliderRequest, RecognitionMethod, ArithmeticRequest
+from src.schemas.request import (
+    SliderRequest,
+    RecognitionMethod,
+    ArithmeticRequest,
+    TextCaptchaRequest,
+)
 from src.schemas.response import (
     BaseResponse,
     SliderResponse,
@@ -21,6 +26,7 @@ __all__ = [
     "SliderRequest",
     "RecognitionMethod",
     "ArithmeticRequest",
+    "TextCaptchaRequest",
     # 响应模型
     "BaseResponse",
     "SliderResponse",

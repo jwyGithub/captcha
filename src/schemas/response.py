@@ -238,22 +238,39 @@ def create_service_info() -> dict:
             "version": settings.app.version,
             "endpoints": [
                 {
-                    "path": "/api/slider/calc",
+                    "path": settings.api.prefix + "/",
+                    "method": "GET",
+                    "description": "服务信息与端点列表",
+                },
+                {
+                    "path": settings.api.prefix + "/health",
+                    "method": "GET",
+                    "description": "健康检查",
+                },
+                {
+                    "path": f"{settings.api.prefix}/slider/calc",
                     "method": "POST",
                     "description": "计算滑块距离（支持 URL 和 Base64）",
                 },
                 {
-                    "path": "/api/arithmetic/calc",
+                    "path": f"{settings.api.prefix}/arithmetic/calc",
                     "method": "POST",
                     "description": "识别算术验证码并计算结果",
                 },
+                {
+                    "path": f"{settings.api.prefix}/text/recognize",
+                    "method": "POST",
+                    "description": "识别文字验证码并返回文本",
+                },
             ],
+            "apiPrefix": settings.api.prefix,
             "features": [
                 "支持 URL 格式图片输入",
                 "支持 Base64 格式图片输入",
                 "支持 OCR 和 OpenCV 两种计算方法",
                 "支持图片尺寸自适应缩放",
                 "支持算术验证码识别与计算",
+                "支持文字验证码识别",
             ],
         },
         description="服务运行正常",

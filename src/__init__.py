@@ -1,7 +1,7 @@
 """
-滑块验证码距离计算服务
+验证码识别服务
 
-基于 OCR 和 OpenCV 的滑块验证码距离计算 HTTP 服务。
+基于 FastAPI 的验证码识别 HTTP 服务。
 
 模块结构:
     - api/: HTTP API 路由和处理
@@ -19,14 +19,14 @@
 """
 
 __version__ = "1.2.0"
-__author__ = "slider-recognize"
-__description__ = "滑块验证码距离计算 HTTP 服务"
+__author__ = "captcha"
+__description__ = "验证码识别 HTTP 服务"
 
 # 导出核心组件
 from src.config import settings
 from src.core import recognize_by_ocr, recognize_by_opencv
-from src.services import SliderService
-from src.schemas import SliderRequest, RecognitionMethod
+from src.services import SliderService, TextService
+from src.schemas import SliderRequest, RecognitionMethod, TextCaptchaRequest
 
 __all__ = [
     # 版本信息
@@ -40,7 +40,9 @@ __all__ = [
     "recognize_by_opencv",
     # 服务
     "SliderService",
+    "TextService",
     # 数据模型
     "SliderRequest",
     "RecognitionMethod",
+    "TextCaptchaRequest",
 ]

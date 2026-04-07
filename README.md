@@ -1,23 +1,29 @@
-# Slider Recognize
+# Captcha
 
 <div align="center">
 
-**滑块验证码距离计算 HTTP 服务**
+**验证码识别 HTTP 服务**
 
-[![Python Version](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/) [![FastAPI](https://img.shields.io/badge/FastAPI-0.115.0+-green.svg)](https://fastapi.tiangolo.com/) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python Version](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/) [![FastAPI](https://img.shields.io/badge/FastAPI-0.115.0+-green.svg)](https://fastapi.tiangolo.com/) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 </div>
 
 ## 📖 项目简介
 
-Slider Recognize 是一个基于 FastAPI 的高性能滑块验证码识别服务，专门用于计算滑块验证码的距离。该项目提供了两种成熟的识别算法（OCR 和 OpenCV），支持多种图片输入格式，具有高精度和高可用性。
+Captcha 是一个基于 FastAPI 的验证码识别服务，当前支持：
+
+- **滑块验证码**：计算滑块移动距离（ddddocr slide_match + OpenCV 模板匹配）
+- **算术验证码**：识别算式并返回计算结果
+- **文字验证码**：识别字符类验证码并返回文本（含常见干扰线场景）
+
+支持 URL 与 Base64 图片输入，提供统一 RESTful API 与 OpenAPI 文档。
 
 ### ✨ 核心特性
 
--   🚀 **双算法支持**: 集成 ddddocr (OCR) 和 OpenCV 两种识别方法
+-   🚀 **多能力集成**: 滑块、算术、文字验证码识别
 -   🖼️ **多格式输入**: 支持 URL 和 Base64 两种图片格式
--   📏 **智能缩放**: 支持图片尺寸调整以提高识别准确率
--   ⚙️ **偏移量校正**: 支持自定义偏移量进行结果微调
+-   📏 **智能缩放**: 滑块场景支持图片尺寸调整以提高识别准确率
+-   ⚙️ **偏移量校正**: 滑块结果支持自定义偏移量微调
 -   🔌 **RESTful API**: 标准化的 HTTP 接口，易于集成
 -   📚 **自动文档**: 内置 Swagger UI 和 ReDoc 文档
 -   🏥 **健康检查**: 提供服务健康监控接口
@@ -26,7 +32,7 @@ Slider Recognize 是一个基于 FastAPI 的高性能滑块验证码识别服务
 
 | 技术    | 版本     | 用途         |
 | ------- | -------- | ------------ |
-| Python  | 3.13+    | 编程语言     |
+| Python  | 3.12+    | 编程语言     |
 | FastAPI | 0.115.0+ | Web 框架     |
 | ddddocr | 1.5.6+   | OCR 识别引擎 |
 | OpenCV  | 4.11.0+  | 图像处理     |
@@ -38,7 +44,7 @@ Slider Recognize 是一个基于 FastAPI 的高性能滑块验证码识别服务
 
 ### 环境要求
 
--   Python 3.13 或更高版本
+-   Python 3.12 或更高版本（与 `pyproject.toml` 一致；Docker 镜像使用 Python 3.12）
 -   pip 或 uv 包管理器
 
 ### 快速安装
@@ -47,8 +53,8 @@ Slider Recognize 是一个基于 FastAPI 的高性能滑块验证码识别服务
 
 ```bash
 # 克隆项目
-git clone https://github.com/yourusername/slider-recognize.git
-cd slider-recognize
+git clone https://github.com/yourusername/captcha.git
+cd captcha
 
 # 安装 uv（如果未安装）
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -64,8 +70,8 @@ uv run python main.py
 
 ```bash
 # 克隆项目
-git clone https://github.com/yourusername/slider-recognize.git
-cd slider-recognize
+git clone https://github.com/yourusername/captcha.git
+cd captcha
 
 # 创建虚拟环境
 python -m venv .venv
@@ -86,14 +92,18 @@ python main.py
 
 -   **API 文档**: http://127.0.0.1:8000/docs
 -   **ReDoc 文档**: http://127.0.0.1:8000/redoc
--   **服务信息**: http://127.0.0.1:8000
+-   **服务信息**: http://127.0.0.1:8000/api/v1/
+
+## API 路径约定
+
+业务接口统一挂在 **`/api/v1`** 下，按功能模块分子路径（滑块 `/api/v1/slider`、算术 `/api/v1/arithmetic`、文字 `/api/v1/text` 等）。可通过环境变量 **`API_PREFIX`** 修改前缀（须以 `/` 开头）。
 
 ## 📡 API 文档
 
 ### 1. 获取服务信息
 
 ```http
-GET /
+GET /api/v1/
 ```
 
 **响应示例**：
@@ -102,20 +112,43 @@ GET /
 {
     "code": 200,
     "data": {
-        "service": "滑块验证码距离计算服务",
+        "service": "验证码识别服务",
         "version": "1.2.0",
+        "apiPrefix": "/api/v1",
         "endpoints": [
             {
-                "path": "/api/slider/calc",
+                "path": "/api/v1/",
+                "method": "GET",
+                "description": "服务信息与端点列表"
+            },
+            {
+                "path": "/api/v1/health",
+                "method": "GET",
+                "description": "健康检查"
+            },
+            {
+                "path": "/api/v1/slider/calc",
                 "method": "POST",
                 "description": "计算滑块距离（支持 URL 和 Base64）"
+            },
+            {
+                "path": "/api/v1/arithmetic/calc",
+                "method": "POST",
+                "description": "识别算术验证码并计算结果"
+            },
+            {
+                "path": "/api/v1/text/recognize",
+                "method": "POST",
+                "description": "识别文字验证码并返回文本"
             }
         ],
         "features": [
             "支持 URL 格式图片输入",
             "支持 Base64 格式图片输入",
             "支持 OCR 和 OpenCV 两种计算方法",
-            "支持图片尺寸自适应缩放"
+            "支持图片尺寸自适应缩放",
+            "支持算术验证码识别与计算",
+            "支持文字验证码识别"
         ]
     },
     "description": "服务运行正常"
@@ -125,7 +158,7 @@ GET /
 ### 2. 计算滑块距离
 
 ```http
-POST /api/slider/calc
+POST /api/v1/slider/calc
 ```
 
 **请求参数**：
@@ -178,7 +211,7 @@ POST /api/slider/calc
 ### 3. 获取推荐尺寸
 
 ```http
-GET /api/slider/recommended-sizes
+GET /api/v1/slider/recommended-sizes
 ```
 
 **响应示例**：
@@ -194,10 +227,74 @@ GET /api/slider/recommended-sizes
 }
 ```
 
-### 4. 健康检查
+### 4. 识别算术验证码
 
 ```http
-GET /api/health
+POST /api/v1/arithmetic/calc
+```
+
+**请求体**：
+
+| 参数 | 类型   | 必填 | 说明                      |
+| ---- | ------ | ---- | ------------------------- |
+| img  | string | 是   | 验证码图片（URL 或 Base64） |
+
+**请求示例**：
+
+```json
+{
+    "img": "https://example.com/captcha.jpg"
+}
+```
+
+**响应示例**：
+
+```json
+{
+    "code": 200,
+    "data": 18,
+    "description": "识别成功",
+    "valid": true
+}
+```
+
+### 5. 识别文字验证码
+
+```http
+POST /api/v1/text/recognize
+```
+
+识别字符类验证码（如含干扰线的字母数字），返回 OCR 文本字符串。
+
+**请求体**：
+
+| 参数 | 类型   | 必填 | 说明                      |
+| ---- | ------ | ---- | ------------------------- |
+| img  | string | 是   | 验证码图片（URL 或 Base64） |
+
+**请求示例**：
+
+```json
+{
+    "img": "https://example.com/text-captcha.png"
+}
+```
+
+**响应示例**：
+
+```json
+{
+    "code": 200,
+    "data": "m6ya",
+    "description": "识别成功",
+    "valid": true
+}
+```
+
+### 6. 健康检查
+
+```http
+GET /api/v1/health
 ```
 
 **响应示例**：
@@ -220,7 +317,7 @@ GET /api/health
 import requests
 
 # API 端点
-url = "http://127.0.0.1:8000/api/slider/calc"
+url = "http://127.0.0.1:8000/api/v1/slider/calc"
 
 # 请求数据（使用 URL 格式）
 payload = {
@@ -242,7 +339,7 @@ print(f"滑块距离: {result['data']} 像素")
 ### cURL 调用示例
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/api/slider/calc" \
+curl -X POST "http://127.0.0.1:8000/api/v1/slider/calc" \
   -H "Content-Type: application/json" \
   -d '{
     "background_url": "https://example.com/background.jpg",
@@ -258,7 +355,7 @@ curl -X POST "http://127.0.0.1:8000/api/slider/calc" \
 
 ```javascript
 // 使用 Fetch API
-fetch('http://127.0.0.1:8000/api/slider/calc', {
+fetch('http://127.0.0.1:8000/api/v1/slider/calc', {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json'
@@ -283,7 +380,7 @@ fetch('http://127.0.0.1:8000/api/slider/calc', {
 
 ### 识别方法选择
 
-项目支持两种识别方法：
+滑块接口支持两种识别方法：
 
 #### 1. OCR 方法（推荐）
 
@@ -325,7 +422,7 @@ fetch('http://127.0.0.1:8000/api/slider/calc', {
 ## 📂 项目结构
 
 ```
-slider-recognize/
+captcha/
 ├── main.py                     # 服务启动入口
 ├── pyproject.toml              # 项目配置和依赖
 ├── uv.lock                     # 依赖锁定文件
@@ -343,8 +440,10 @@ slider-recognize/
     │   ├── router.py           # 路由注册
     │   └── routes/             # 路由定义
     │       ├── __init__.py
-    │       ├── health.py       # 健康检查路由
-    │       └── slider.py       # 滑块识别路由
+    │       ├── health.py       # 健康检查与服务信息
+    │       ├── slider.py       # 滑块识别路由
+    │       ├── arithmetic.py   # 算术验证码路由
+    │       └── text.py         # 文字验证码路由
     │
     ├── config/                 # 配置管理模块
     │   ├── __init__.py
@@ -352,7 +451,7 @@ slider-recognize/
     │
     ├── core/                   # 核心算法模块
     │   ├── __init__.py
-    │   ├── ocr.py              # OCR 识别算法
+    │   ├── ocr.py              # OCR（滑块 + classification 单例）
     │   └── opencv.py           # OpenCV 识别算法
     │
     ├── exceptions/             # 异常处理模块
@@ -371,7 +470,9 @@ slider-recognize/
     │
     ├── services/               # 业务服务模块
     │   ├── __init__.py
-    │   └── slider.py           # 滑块识别服务
+    │   ├── slider.py           # 滑块识别服务
+    │   ├── arithmetic.py       # 算术验证码服务
+    │   └── text.py             # 文字验证码服务
     │
     └── utils/                  # 工具函数模块
         ├── __init__.py
@@ -383,6 +484,7 @@ slider-recognize/
 
 | 变量名                    | 说明               | 默认值      |
 | ------------------------- | ------------------ | ----------- |
+| API_PREFIX                | 对外 API 根路径（须以 `/` 开头） | /api/v1     |
 | SERVER_HOST               | 服务器主机地址     | 0.0.0.0     |
 | SERVER_PORT               | 服务器端口         | 8000        |
 | SERVER_DEBUG              | 调试模式           | false       |
@@ -460,7 +562,7 @@ pytest
 
 **解决方案**：
 
-1. 检查 Python 版本：`python --version`（需要 3.13+）
+1. 检查 Python 版本：`python --version`（需要 3.12+）
 2. 确认依赖已安装：`uv sync` 或 `pip install -e .`
 3. 检查端口占用：`lsof -i:8000`
 
@@ -480,7 +582,7 @@ pytest
 
 ## 📮 联系方式
 
-如有问题或建议，欢迎提交 [Issue](https://github.com/yourusername/slider-recognize/issues)
+如有问题或建议，欢迎提交 [Issue](https://github.com/yourusername/captcha/issues)
 
 ---
 
